@@ -10,9 +10,12 @@ class CPU:
         self.ram =[0] * 256
         self.reg= [NONE] * 8
         self.pc = 0
-        
+
     def ram_read(self, address):
         return self.ram[address]
+
+    def ram_write(self, value, address):
+        return self.ram[address] = value
 
     def load(self):
         """Load a program into memory."""
@@ -65,6 +68,7 @@ class CPU:
 
         print()
     
-    def run(self):
+    def run(self, address, ):
         """Run the CPU."""
-        pass
+        ir = self.ram[self.pc] # read the memory address that's stored in register `PC`, and store that result in `IR`
+        
