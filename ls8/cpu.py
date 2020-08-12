@@ -96,13 +96,4 @@ class CPU:
         # Convert ir to a string so we can check its length easily
         str_ir = str(ir)
 
-        while self.ram[self.pc] != HLT:
-
-            if self.ram[self.pc] == LDI:
-                self.ldi(self.ram[self.pc+1], self.ram[self.pc+2])
-                self.pc += 2
-            elif self.ram[self.pc] == PRN:
-                self.prn(self.ram[self.pc+1])
-                self.pc +=1
-
-            self.pc += 1
+        
