@@ -82,10 +82,27 @@ class CPU:
         """Run the CPU."""
         ir = self.ram[self.pc] # read the memory address that's stored in register `PC`, and store that result in `IR`
 
+        # Set up basic pointers
+        # * `HLT`: halt the CPU and exit the emulator.
+        HLT = 1
+        # * `LDI`: load "immediate", store a value in a register, or "set this register to this value".
+        LDI = 10000010
+        # * `PRN`: a pseudo-instruction that prints the numeric value stored in a   register.
+        PRN = 1000111
+
         operand_a = self.ram_read(self.pc + 1) # Using `ram_read()`, read the bytes at `PC+1` and `PC+2` from RAM into variables 
         operand_b = self.ram_read(self.pc + 2) # `operand_a` and `operand_b` in case the instruction needs them.
 
-        Running = True
-        while Running:
+        # Convert ir to a string so we can check its length easily
+        str_ir = str(ir)
 
+        while self.ram[self.pc] != HLT:
 
+            if self.ram[self.pc] == LDI:
+                self.ldi(self.ram[self.pc+1], self.ram[self.pc+2])
+                self.pc += 2
+            elif self.ram[self.pc] == PRN:
+                self.prn(self.ram[self.pc+1])
+                self.pc +=1
+
+            self.pc += 1
