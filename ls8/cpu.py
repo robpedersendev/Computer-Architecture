@@ -4,7 +4,7 @@ import sys
 
 operands = {
     "HLT_op": 0b00000001,
-    "LDI_op":0b10000010,
+    "LDI_op": 0b10000010,
     "PRN_op": 0b01000111
 
 }
@@ -17,6 +17,9 @@ class CPU:
         self.ram =[0] * 256
         self.reg= [NONE] * 8
         self.pc = 0
+
+    # * `MAR`: Memory Address Register -- which memory address we're reading and writing
+    # * `MDR`: Memory Data Register --  writes the held or read value
 
     def ram_read(self, address):
         return self.ram[address]
