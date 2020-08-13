@@ -77,18 +77,35 @@ class CPU:
             print(" %02X" % self.reg[i], end='')
 
         print()
-    
+
+    # Create a function to find the index
+    def find_idx(self, binary):
+        binary_str = str(binary)
+        binary_str.replace("0b", '')
+        return int(binary_str, 2) 
+
+    # Create a function for the LDI
+    def ldi(self, number, value):
+        idx = self.find_idx(number)
+        self.reg[idx] = value
+
+    # Create a function for the PRN
+    def prn(self, number):
+        idx = self.find_idx(number)
+        print(self.reg[idx])
+
+    # Structure the run function
     def run(self ):
         """Run the CPU."""
         ir = self.ram[self.pc] # read the memory address that's stored in register `PC`, and store that result in `IR`
 
         # Set up basic pointers
         # * `HLT`: halt the CPU and exit the emulator.
-        HLT = 1
+        HLT = 0b00000001
         # * `LDI`: load "immediate", store a value in a register, or "set this register to this value".
-        LDI = 10000010
+        LDI = 0b10000010
         # * `PRN`: a pseudo-instruction that prints the numeric value stored in a   register.
-        PRN = 1000111
+        PRN = 0b01000111
 
         operand_a = self.ram_read(self.pc + 1) # Using `ram_read()`, read the bytes at `PC+1` and `PC+2` from RAM into variables 
         operand_b = self.ram_read(self.pc + 2) # `operand_a` and `operand_b` in case the instruction needs them.
@@ -96,4 +113,13 @@ class CPU:
         # Convert ir to a string so we can check its length easily
         str_ir = str(ir)
 
-        
+        while self.ram[self.pc] != HLT:
+
+            if self.ram[self.pc] == LDI:
+                self.ldi(self.ram[self.pc+1], self.ram[self.pc+2])
+                self.pc += 2
+            elif self.ram[self.pc] == PRN:
+                self.prn(self.ram[self.pc+1])
+                self.pc +=1
+
+            self.pc += 1
