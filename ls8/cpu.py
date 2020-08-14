@@ -116,6 +116,9 @@ class CPU:
         """Run the CPU."""
         ir = self.ram[self.pc] # read the memory address that's stored in register `PC`, and store that result in `IR`
 
+        # Convert the IR to string
+        ir_string = str(ir)
+        
         # Set up basic pointers
         # * `HLT`: halt the CPU and exit the emulator.
         HLT = 0b00000001
@@ -128,15 +131,34 @@ class CPU:
         operand_b = self.ram_read(self.pc + 2) # `operand_a` and `operand_b` in case the instruction needs them.
 
         # Convert ir to a string so we can check its length easily
-        str_ir = str(ir)
-
-        while self.ram[self.pc] != HLT:
-
-            if self.ram[self.pc] == LDI:
-                self.ldi(self.ram[self.pc+1], self.ram[self.pc+2])
+        ir_string = str(ir)
+        
+        while ir != HLT:
+            # Ensure that the strings length is 6 and check if the 6th digit from the end is a "1"
+            if len(ir_string) > 6 and ir_string[-6] == "1":
+                    # Do an additional check if the ir value matches "10100010"
+                    if ir == 10100010:
+                        # If so, set the multiply instruction 
+                        inst = "MUL"
+                    # Do an additional check if the ir value matches "10100000"
+                    elif ir == 10100000:
+                        # If so, set the multiply instruction
+                        inst = "ADD"
+                    # Utilize the alu function and pass it inst, operand_a, and operand_b
+                    self.alu(inst, operand_a, operand_b)
+                    # Increment self.pc by 2
+                    self.pc += 2
+            # Otherwise, check if ir equals "LDI"
+            elif ir == LDI:
+                # If it does, utilize the LDI function and pass it the operand_a and operand_b 
+                self.ldi(operand_a, operand_b)
+                # Increment the self.pc value by 2
                 self.pc += 2
-            elif self.ram[self.pc] == PRN:
-                self.prn(self.ram[self.pc+1])
+            # Otherwise, check if ir equals "PRN"
+            elif ir == PRN:
+                # If it does, utilize the PRN function and pass it the operand_a 
+                self.prn(operand_a)
+                # Increment the self.pc value by 1
                 self.pc +=1
-
+            # Jump to the next value and increment self.pc by 1 
             self.pc += 1
