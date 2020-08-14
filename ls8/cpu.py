@@ -21,33 +21,50 @@ class CPU:
     # * `MAR`: Memory Address Register -- which memory address we're reading and writing
     # * `MDR`: Memory Data Register --  writes the held or read value
 
-    def ram_read(self, address):
-        return self.ram[address]
+    def ram_read(self, MAR):
+        # should accept the address to read and return the value stored there.
+        return self.ram[MAR]
 
-    def ram_write(self, value, address):
-        return self.ram[address] = value
 
-    def load(self):
+    def ram_write(self, MAR, MDR):
+        # should accept a value to write, and the address to write it to. 
+        self.ram[MAR] = MDR
+
+    def load(self, program=None):
         """Load a program into memory."""
+        # If there are less then two programs entered in the command line
+        if len(sys.argv) < 2:
+            # Provide user feedback
+            sys.exit("We need two file names entered.")
 
-        address = 0
+        # For froward thinking, do some error handling
+        try:
+            # Set the address pointer to 0
+            address = 0
+            # Open the program as a file
+            with open(program) as file:
+                # Loop through every line in the file
+                for line in file:
+                    # Now we need to do some exception handling withing the file
+                    ## Split every line when we encounter a hashtag or a python comment 
+                    break_line = line.split('#')[0]
+                    # Split each word as a list item
+                    break_line_strip = break_line.strip()
+                    # Check if break_line has no spaces
+                    if break_line == '':
+                        # If so, continue on
+                        continue
+                    # Transform the break_line value into an integer
+                    break_line_int = int(break_line_strip)
+                    # Set the index of address to equal the value of the break_line_int
+                    self.ram[address] = break_line_int
+                    # Increment address 
+                    address += 1
 
-        # For now, we've just hardcoded a program:
-
-        program = [
-            # From print8.ls8
-            0b10000010, # LDI R0,8
-            0b00000000,
-            0b00001000,
-            0b01000111, # PRN R0
-            0b00000000,
-            0b00000001, # HLT
-        ]
-
-        for instruction in program:
-            self.ram[address] = instruction
-            address += 1
-
+        # If the file is not found
+        except FileNotFoundError:
+            # Make this user friendly and tell them what went wrong
+            sys.exit(f"{sys.argv[0]} and {sys.argv[1]} file's was not found")
 
     def alu(self, op, reg_a, reg_b):
         """ALU operations."""
