@@ -248,6 +248,14 @@ class CPU:
             elif ir == POP:
                 # Then run the self.pop function using the operand_a
                 self.pop(operand_a)
+            # Check if ir equals "CALL"
+            elif ir == CALL:
+                # Then run the self.call function using the operand_a
+                self.call(operand_a)
+            # Check if ir equals "RET"
+            elif ir == RET:
+                # Then run the self.pop_off_of_stack function
+                self.pop_off_of_stack()
 
             # Jump to the next value and increment self.pc by 1 
             self.pc += 1
