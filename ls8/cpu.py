@@ -2,13 +2,14 @@
 
 import sys
 
-operands = {
-    "HLT_op": 0b00000001,
-    "LDI_op": 0b10000010,
-    "PRN_op": 0b01000111
+PRN = 1000111
+LDI = 10000010 
+ADD = 10100000
+MUL = 10100010
+PUSH = 1000101 
+POP = 1000110 
 
-}
-
+HLT = 1
 class CPU:
     """Main CPU class."""
 
