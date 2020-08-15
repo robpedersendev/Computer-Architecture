@@ -89,6 +89,7 @@ class CPU:
             self.pc += 2
         else:
             raise Exception("Unsupported ALU operation")
+        self.pc += 3
 
     def trace(self):
         """
@@ -109,6 +110,26 @@ class CPU:
             print(" %02X" % self.reg[i], end='')
 
         print()
+
+    def call(self, number):
+        # Get the value within the register using number as the index value
+        value = self.reg[number]
+
+        # Point to a later value in the stack
+        higher_value = self.pc+2
+
+        # Decrement stack pointer
+        self.reg[7] -= 1
+
+        # Assign the stack pointer address to the stack pointer
+        sp = self.reg[7]
+
+        # Assing the higher_value a place on the stack according to the index value of the stack pointer
+        self.ram[sp] = higher_value
+        
+        # Jump to the address within the register
+        self.pc = value
+
 
     def push(self, number):
         # Decrease stack pointer
