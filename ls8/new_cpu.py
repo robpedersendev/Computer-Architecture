@@ -65,10 +65,7 @@ class CPU:
             AND: self.bitwise_and,
             OR: self.bitwise_or,
             XOR: self.bitwise_xor,
-            NOT: self.bitwise_not,
-            SHL: self.bitwise_shl,
-            SHR: self.bitwise_shr,
-            MOD: self.bitwise_mod
+            NOT: self.bitwise_not
         }
 
     # * `MAR`: Memory Address Register -- which memory address we're reading and writing
@@ -230,6 +227,28 @@ class CPU:
         idx = self.find_idx(number)
         print(self.reg[idx])
         self.pc += 2
+
+    def add(self, reg_a, reg_b):
+        self.reg[reg_a] += self.reg[reg_b]
+        self.pc += 3
+
+    def mul(self, reg_a, reg_b):
+        self.reg[reg_a] *= self.reg[reg_b]
+        self.pc += 3
+
+    def comp(self, reg_a, reg_b):
+        self.fl[5] = 0
+        self.fl[6] = 0
+        self.fl[7] = 0
+        if self.reg[reg_a] < self.reg[reg_b]:
+            self.fl[5] = 1
+        elif self.reg[reg_a] > self.reg[reg_b]:
+            self.fl[6] = 1
+        elif self.reg[reg_a] == self.reg[reg_b]:
+            self.fl[7] = 1
+        self.pc += 3
+
+    
 
     # Structure the run function
     def run(self ):
