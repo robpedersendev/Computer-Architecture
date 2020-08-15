@@ -248,7 +248,31 @@ class CPU:
             self.fl[7] = 1
         self.pc += 3
 
+    def bitwise_and(self, reg_a, reg_b):
+        self.reg[reg_a] = self.reg[reg_a] & self.reg[reg_b]
+        self.pc += 3
+
+    def bitwise_or(self, reg_a, reg_b):
+        self.reg[reg_a] = self.reg[reg_a] | self.reg[reg_b]
+        self.pc += 3
+
+    def bitwise_xor(self, reg_a, reg_b):
+        self.reg[reg_a] = self.reg[reg_a] ^ self.reg[reg_b]
+        self.pc += 3
+
+    def bitwise_not(self, reg_a, not_used):
+        self.reg[reg_a] = ~self.reg[reg_a]
+        self.pc += 2
+
+    def jump(self, number, not_used):
+        address = self.reg[number]
+        self.pc = address
     
+    def jump_similarity(self, number, not_used):
+        if self.fl[7] == 1:
+            self.jump(number, not_used)
+        elif self.fl[7] == 0:
+            self.pc += 2
 
     # Structure the run function
     def run(self ):
