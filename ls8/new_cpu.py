@@ -121,20 +121,11 @@ class CPU:
 
     def alu(self, op, reg_a, reg_b):
         """ALU operations."""
-
-        if op == "ADD":
-            self.reg[reg_a] += self.reg[reg_b]
-             # We need to jump ahead two spaces of what self.pc is currently assigned
-            self.pc += 2
-        # Step 8: Implement a Multiply and Print the Result
-        elif op == "MUL":
-            # Same as add above, but multiplying 
-            self.reg[reg_a] *= self.reg[reg_b]
-            # We need to jump ahead two spaces of what self.pc is currently assigned
-            self.pc += 2
+        ir = self.ram_read(self.pc)
+        if ir in self.alu_dispatch_table:
+            self.alu_dispatch_table[ir](operand_a, operand_b)
         else:
             raise Exception("Unsupported ALU operation")
-        self.pc += 3
 
     def trace(self):
         """
