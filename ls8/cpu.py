@@ -106,17 +106,34 @@ class CPU:
         print()
 
     def push(self, number):
-        # Establish the stack pointer
-        sp = self.reg[7]
-
-        # Decrease the stack pointer
-        sp -= 1
+        # Decrease stack pointer
+        self.reg[7] -= 1
 
         # Use the provided number as the index to get a value from the register
         value = self.reg[number]
 
+        # Assign the stack pointer address to the stack pointer
+        sp = self.reg[7]
+        
         # Reassign the ram index value of stack pointer equal to what value is
         self.ram[sp] = value
+
+        # Increment self.pc
+        self.pc +=1
+    
+    def pop(self, operand_a):
+        # Establish the stack pointer
+        sp = self.reg[7]
+
+        # Use the stack pointer as the index to get a value from ram
+        value = self.ram[sp]
+
+        # Reassign the reg index value of operand_a equal to what value is
+        self.reg[operand_a] = value
+
+        # Increment stack pointer
+        self.reg[7] += 1
+
         # Increment self.pc
         self.pc +=1
 
