@@ -63,11 +63,7 @@ class CPU:
         self.alu_dispatch_table = {
             ADD: self.add,
             MUL: self.mul,
-            CMP: self.comp,
-            AND: self.bitwise_and,
-            OR: self.bitwise_or,
-            XOR: self.bitwise_xor,
-            NOT: self.bitwise_not
+            CMP: self.comp
         }
 
     # * `MAR`: Memory Address Register -- which memory address we're reading and writing
@@ -224,9 +220,8 @@ class CPU:
         self.pc += 3
 
     # Create a function for the PRN
-    def prn(self, number):
-        idx = self.find_idx(number)
-        print(self.reg[idx])
+    def prn(self, number, not_used):
+        print(self.reg[number])
         self.pc += 2
 
     def add(self, reg_a, reg_b):
@@ -248,22 +243,6 @@ class CPU:
         elif self.reg[reg_a] == self.reg[reg_b]:
             self.fl[7] = 1
         self.pc += 3
-
-    def bitwise_and(self, reg_a, reg_b):
-        self.reg[reg_a] = self.reg[reg_a] & self.reg[reg_b]
-        self.pc += 3
-
-    def bitwise_or(self, reg_a, reg_b):
-        self.reg[reg_a] = self.reg[reg_a] | self.reg[reg_b]
-        self.pc += 3
-
-    def bitwise_xor(self, reg_a, reg_b):
-        self.reg[reg_a] = self.reg[reg_a] ^ self.reg[reg_b]
-        self.pc += 3
-
-    def bitwise_not(self, reg_a, not_used):
-        self.reg[reg_a] = ~self.reg[reg_a]
-        self.pc += 2
 
     def jump(self, number, not_used):
         address = self.reg[number]
