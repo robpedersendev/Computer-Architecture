@@ -303,10 +303,10 @@ class CPU:
         # ir_string = str(ir)
 
 
-       
+        ir = self.ram[self.pc] # read the memory address that's stored in register `PC`, and store that result in `IR`
         
         while ir != HLT:
-            ir = self.ram[self.pc] # read the memory address that's stored in register `PC`, and store that result in `IR`
+            
 
             
             operand_a = self.find_idx(self.ram_read(self.pc + 1)) # Using `ram_read()`, read the bytes at `PC+1` and `PC+2` from RAM into variables 
