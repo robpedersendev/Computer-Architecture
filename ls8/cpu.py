@@ -105,10 +105,26 @@ class CPU:
 
         print()
 
+    def push(self, number):
+        # Establish the stack pointer
+        sp = self.reg[7]
+
+        # Decrease the stack pointer
+        sp -= 1
+
+        # Use the provided number as the index to get a value from the register
+        value = self.reg[number]
+
+        # Reassign the ram index value of stack pointer equal to what value is
+        self.ram[sp] = value
+        # Increment self.pc
+        self.pc +=1
+
     # Create a function to find the index
     def find_idx(self, binary):
         binary_str = str(binary)
         binary_str.replace("0b", '')
+        # Converts this into a base two number
         return int(binary_str, 2) 
 
     # Create a function for the LDI
