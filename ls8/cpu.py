@@ -8,8 +8,8 @@ ADD = 10100000
 MUL = 10100010
 PUSH = 1000101 
 POP = 1000110 
-
 HLT = 1
+
 class CPU:
     """Main CPU class."""
 
@@ -18,6 +18,8 @@ class CPU:
         self.ram =[0] * 256
         self.reg= [NONE] * 8
         self.pc = 0
+        # Create the flag pointer
+        self.fl = 0
 
     # * `MAR`: Memory Address Register -- which memory address we're reading and writing
     # * `MDR`: Memory Data Register --  writes the held or read value
@@ -72,7 +74,14 @@ class CPU:
 
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
-        #elif op == "SUB": etc
+             # We need to jump ahead two spaces of what self.pc is currently assigned
+            self.pc += 2
+        # Step 8: Implement a Multiply and Print the Result
+        elif op == "MUL":
+            # Same as add above, but multiplying 
+            self.reg[reg_a] *= self.reg[reg_b]
+            # We need to jump ahead two spaces of what self.pc is currently assigned
+            self.pc += 2
         else:
             raise Exception("Unsupported ALU operation")
 
