@@ -111,6 +111,19 @@ class CPU:
 
         print()
 
+    def pop_off_of_stack(self):
+        # Assign the stack pointer address to the stack pointer
+        sp = self.reg[7]
+
+        # higher_value is what will be popped off
+        higher_value = self.ram[sp]
+        
+        # Increment stack pointer
+        self.reg[7] += 1
+
+        # Assign self.pc to higher_value so it can be popped off
+        self.pc = higher_value
+    
     def call(self, number):
         # Get the value within the register using number as the index value
         value = self.reg[number]
