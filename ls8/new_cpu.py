@@ -15,13 +15,7 @@ CMP = 10100111
 JMP = 1010100
 JEQ = 1010101
 JNE = 1010110
-AND = 10101000
-OR = 10101010
-XOR = 10101011
-NOT = 1101001
-SHL = 10101100
-SHR = 10101101
-MOD = 10100100
+
 
 class CPU:
     """Main CPU class."""
@@ -52,13 +46,7 @@ class CPU:
             JEQ: self.jump_similarity,
             JNE: self.jump_not_similar,
             CMP: self.alu,
-            AND: self.alu,
-            OR: self.alu,
-            XOR: self.alu,
-            NOT: self.alu,
-            SHL: self.alu,
-            SHR: self.alu,
-            MOD: self.alu
+            
         }
         self.alu_dispatch_table = {
             ADD: self.add,
@@ -263,24 +251,6 @@ class CPU:
     # Structure the run function
     def run(self ):
         """Run the CPU."""
-        
-        
-
-        # # Convert the IR to string
-        # ir_string = str(ir)
-        
-        # # Set up basic pointers
-        # # * `HLT`: halt the CPU and exit the emulator.
-        # HLT = 0b00000001
-        # # * `LDI`: load "immediate", store a value in a register, or "set this register to this value".
-        # LDI = 0b10000010
-        # # * `PRN`: a pseudo-instruction that prints the numeric value stored in a   register.
-        # PRN = 0b01000111
-
-        # # Convert ir to a string so we can check its length easily
-        # ir_string = str(ir)
-
-
         ir = self.ram[self.pc] # read the memory address that's stored in register `PC`, and store that result in `IR`
         
         while ir != HLT:
