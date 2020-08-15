@@ -157,51 +157,58 @@ class CPU:
     # Structure the run function
     def run(self ):
         """Run the CPU."""
+        
         ir = self.ram[self.pc] # read the memory address that's stored in register `PC`, and store that result in `IR`
 
-        # Convert the IR to string
-        ir_string = str(ir)
+        # # Convert the IR to string
+        # ir_string = str(ir)
         
-        # Set up basic pointers
-        # * `HLT`: halt the CPU and exit the emulator.
-        HLT = 0b00000001
-        # * `LDI`: load "immediate", store a value in a register, or "set this register to this value".
-        LDI = 0b10000010
-        # * `PRN`: a pseudo-instruction that prints the numeric value stored in a   register.
-        PRN = 0b01000111
+        # # Set up basic pointers
+        # # * `HLT`: halt the CPU and exit the emulator.
+        # HLT = 0b00000001
+        # # * `LDI`: load "immediate", store a value in a register, or "set this register to this value".
+        # LDI = 0b10000010
+        # # * `PRN`: a pseudo-instruction that prints the numeric value stored in a   register.
+        # PRN = 0b01000111
+
+        # # Convert ir to a string so we can check its length easily
+        # ir_string = str(ir)
 
         operand_a = self.ram_read(self.pc + 1) # Using `ram_read()`, read the bytes at `PC+1` and `PC+2` from RAM into variables 
         operand_b = self.ram_read(self.pc + 2) # `operand_a` and `operand_b` in case the instruction needs them.
 
-        # Convert ir to a string so we can check its length easily
-        ir_string = str(ir)
+       
         
         while ir != HLT:
-            # Ensure that the strings length is 6 and check if the 6th digit from the end is a "1"
-            if len(ir_string) > 6 and ir_string[-6] == "1":
-                    # Do an additional check if the ir value matches "10100010"
-                    if ir == 10100010:
-                        # If so, set the multiply instruction 
-                        inst = "MUL"
-                    # Do an additional check if the ir value matches "10100000"
-                    elif ir == 10100000:
-                        # If so, set the multiply instruction
-                        inst = "ADD"
-                    # Utilize the alu function and pass it inst, operand_a, and operand_b
-                    self.alu(inst, operand_a, operand_b)
-                    # Increment self.pc by 2
-                    self.pc += 2
+            # Check if ir equals "MUL"
+            if ir == MUL:
+                # Then run the self.alu function using the "MUL", operand_a, operand_b
+                self.alu("MUL", operand_a, operand_b)
+
+            # Check if ir equals "ADD"
+            elif ir == ADD:
+                # Then run the self.alu function using the "ADD", operand_a, operand_b
+                self.alu("ADD", operand_a, operand_b)
+
             # Otherwise, check if ir equals "LDI"
             elif ir == LDI:
                 # If it does, utilize the LDI function and pass it the operand_a and operand_b 
                 self.ldi(operand_a, operand_b)
-                # Increment the self.pc value by 2
-                self.pc += 2
+
             # Otherwise, check if ir equals "PRN"
             elif ir == PRN:
                 # If it does, utilize the PRN function and pass it the operand_a 
                 self.prn(operand_a)
-                # Increment the self.pc value by 1
-                self.pc +=1
+
+            # Otherwise, check if ir equals "PUSH"
+            elif ir == PUSH:
+                # Then run the self.push function using the operand_a
+                self.push(operand_a)
+
+            # Check if ir equals "POP"
+            elif ir == POP:
+                # Then run the self.pop function using the operand_a
+                self.pop(operand_a)
+
             # Jump to the next value and increment self.pc by 1 
             self.pc += 1
