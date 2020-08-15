@@ -158,7 +158,7 @@ class CPU:
         self.ram[sp] = value
 
         # Increment self.pc
-        self.pc +=1
+        self.pc += 2
     
     def pop(self, operand_a):
         # Establish the stack pointer
@@ -174,7 +174,7 @@ class CPU:
         self.reg[7] += 1
 
         # Increment self.pc
-        self.pc +=1
+        self.pc += 2
 
     # Create a function to find the index
     def find_idx(self, binary):
@@ -187,11 +187,13 @@ class CPU:
     def ldi(self, number, value):
         idx = self.find_idx(number)
         self.reg[idx] = value
+        self.pc += 3
 
     # Create a function for the PRN
     def prn(self, number):
         idx = self.find_idx(number)
         print(self.reg[idx])
+        self.pc += 2
 
     # Structure the run function
     def run(self ):
