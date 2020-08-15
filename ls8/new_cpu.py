@@ -30,7 +30,9 @@ class CPU:
         """Construct a new CPU."""
         # Clear Ram, and set it equal to the Interrupt vector
         self.ram =[0] * 0xFF
-        # Set the registry to 0xF4
+        # Create 8 individual spaces inside a list for the register
+        self.reg = [0] * 8
+        # Set the register's 7th index to 0xF4
         self.reg[7] = 0xF4
         # Set pc pointer to 0
         self.pc = 0
@@ -44,11 +46,11 @@ class CPU:
             MUL: self.alu,
             ADD: self.alu,
             CALL: self.call,
-            RET: self.return_from_call,
+            RET: self.pop_off_of_stack,
             CMP: self.alu,
             JMP: self.jump,
-            JEQ: self.jump_if_equal,
-            JNE: self.jump_not_equal,
+            JEQ: self.jump_similarity,
+            JNE: self.jump_not_similar,
             CMP: self.alu,
             AND: self.alu,
             OR: self.alu,
@@ -101,7 +103,7 @@ class CPU:
                     # Split each word as a list item
                     break_line_strip = break_line.strip()
                     # Check if break_line has no spaces
-                    if break_line == '':
+                    if break_line_strip == '':
                         # If so, continue on
                         continue
                     # Transform the break_line value into an integer
@@ -116,9 +118,9 @@ class CPU:
             # Make this user friendly and tell them what went wrong
             sys.exit(f"{sys.argv[0]} and {sys.argv[1]} file's was not found")
 
-    def alu(self, op, reg_a, reg_b):
+    def alu(self, reg_a, reg_b):
         """ALU operations."""
-        ir = self.ram_read(self.pc)
+        ir = self.ram[self.pc]
         if ir in self.alu_dispatch_table:
             self.alu_dispatch_table[ir](operand_a, operand_b)
         else:
@@ -300,11 +302,11 @@ class CPU:
         # # Convert ir to a string so we can check its length easily
         # ir_string = str(ir)
 
-        operand_a = self.ram_read(self.pc + 1) # Using `ram_read()`, read the bytes at `PC+1` and `PC+2` from RAM into variables 
-        operand_b = self.ram_read(self.pc + 2) # `operand_a` and `operand_b` in case the instruction needs them.
+        operand_a = self.find_idx(self.ram_read(self.pc + 1)) # Using `ram_read()`, read the bytes at `PC+1` and `PC+2` from RAM into variables 
+        operand_b = self.find_idx(self.ram_read(self.pc + 2)) # `operand_a` and `operand_b` in case the instruction needs them.
 
        
         
         while ir != HLT:
             self.dispatch_table[ir](operand_a, operand_b)
-            ir = self.ram_read(self.pc)
+            ir = self.ram[self.pc]
