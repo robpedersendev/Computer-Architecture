@@ -118,7 +118,7 @@ class CPU:
             # Make this user friendly and tell them what went wrong
             sys.exit(f"{sys.argv[0]} and {sys.argv[1]} file's was not found")
 
-    def alu(self, reg_a, reg_b):
+    def alu(self, operand_a, operand_b):
         """ALU operations."""
         ir = self.ram[self.pc]
         if ir in self.alu_dispatch_table:
