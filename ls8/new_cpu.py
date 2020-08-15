@@ -11,6 +11,11 @@ POP = 1000110
 HLT = 1
 CALL = 1010000
 RET = 10001
+CMP = 10100111
+JMP = 1010100
+JEQ = 1010101
+JNE = 1010110
+
 
 class CPU:
     """Main CPU class."""
@@ -19,12 +24,35 @@ class CPU:
         """Construct a new CPU."""
         # Clear Ram, and set it equal to the Interrupt vector
         self.ram =[0] * 0xFF
-        # Set the registry to 0xF4
+        # Create 8 individual spaces inside a list for the register
+        self.reg = [0] * 8
+        # Set the register's 7th index to 0xF4
         self.reg[7] = 0xF4
         # Set pc pointer to 0
         self.pc = 0
         # Create the flag pointer, we need a list of 8 empty paces
         self.fl = [0]*8
+        self.dispatch_table = {
+            LDI: self.ldi,
+            PRN: self.prn,
+            PUSH: self.push,
+            POP: self.pop,
+            MUL: self.alu,
+            ADD: self.alu,
+            CALL: self.call,
+            RET: self.pop_off_of_stack,
+            CMP: self.alu,
+            JMP: self.jump,
+            JEQ: self.jump_similarity,
+            JNE: self.jump_not_similar,
+            CMP: self.alu,
+            
+        }
+        self.alu_dispatch_table = {
+            ADD: self.add,
+            MUL: self.mul,
+            CMP: self.comp
+        }
 
     # * `MAR`: Memory Address Register -- which memory address we're reading and writing
     # * `MDR`: Memory Data Register --  writes the held or read value
@@ -59,7 +87,7 @@ class CPU:
                     # Split each word as a list item
                     break_line_strip = break_line.strip()
                     # Check if break_line has no spaces
-                    if break_line == '':
+                    if break_line_strip == '':
                         # If so, continue on
                         continue
                     # Transform the break_line value into an integer
@@ -74,22 +102,13 @@ class CPU:
             # Make this user friendly and tell them what went wrong
             sys.exit(f"{sys.argv[0]} and {sys.argv[1]} file's was not found")
 
-    def alu(self, op, reg_a, reg_b):
+    def alu(self, operand_a, operand_b):
         """ALU operations."""
-
-        if op == "ADD":
-            self.reg[reg_a] += self.reg[reg_b]
-             # We need to jump ahead two spaces of what self.pc is currently assigned
-            self.pc += 2
-        # Step 8: Implement a Multiply and Print the Result
-        elif op == "MUL":
-            # Same as add above, but multiplying 
-            self.reg[reg_a] *= self.reg[reg_b]
-            # We need to jump ahead two spaces of what self.pc is currently assigned
-            self.pc += 2
+        ir = self.ram[self.pc]
+        if ir in self.alu_dispatch_table:
+            self.alu_dispatch_table[ir](operand_a, operand_b)
         else:
             raise Exception("Unsupported ALU operation")
-        self.pc += 3
 
     def trace(self):
         """
@@ -185,79 +204,61 @@ class CPU:
 
     # Create a function for the LDI
     def ldi(self, number, value):
-        idx = self.find_idx(number)
-        self.reg[idx] = value
+        self.reg[number] = value
         self.pc += 3
 
     # Create a function for the PRN
-    def prn(self, number):
-        idx = self.find_idx(number)
-        print(self.reg[idx])
+    def prn(self, number, not_used):
+        print(self.reg[number])
         self.pc += 2
+
+    def add(self, reg_a, reg_b):
+        self.reg[reg_a] += self.reg[reg_b]
+        self.pc += 3
+
+    def mul(self, reg_a, reg_b):
+        self.reg[reg_a] *= self.reg[reg_b]
+        self.pc += 3
+
+    def comp(self, reg_a, reg_b):
+        self.fl[5] = 0
+        self.fl[6] = 0
+        self.fl[7] = 0
+        if self.reg[reg_a] < self.reg[reg_b]:
+            self.fl[5] = 1
+        elif self.reg[reg_a] > self.reg[reg_b]:
+            self.fl[6] = 1
+        elif self.reg[reg_a] == self.reg[reg_b]:
+            self.fl[7] = 1
+        self.pc += 3
+
+    def jump(self, number, not_used):
+        address = self.reg[number]
+        self.pc = address
+    
+    def jump_similarity(self, number, not_used):
+        if self.fl[7] == 1:
+            self.jump(number, not_used)
+        elif self.fl[7] == 0:
+            self.pc += 2
+
+    def jump_not_similar(self, number, not_used):
+        if self.fl[7] == 0:
+            self.jump(number, not_used)
+        elif self.fl[7] == 1:
+            self.pc += 2
 
     # Structure the run function
     def run(self ):
         """Run the CPU."""
-        
         ir = self.ram[self.pc] # read the memory address that's stored in register `PC`, and store that result in `IR`
-
-        # # Convert the IR to string
-        # ir_string = str(ir)
-        
-        # # Set up basic pointers
-        # # * `HLT`: halt the CPU and exit the emulator.
-        # HLT = 0b00000001
-        # # * `LDI`: load "immediate", store a value in a register, or "set this register to this value".
-        # LDI = 0b10000010
-        # # * `PRN`: a pseudo-instruction that prints the numeric value stored in a   register.
-        # PRN = 0b01000111
-
-        # # Convert ir to a string so we can check its length easily
-        # ir_string = str(ir)
-
-        operand_a = self.ram_read(self.pc + 1) # Using `ram_read()`, read the bytes at `PC+1` and `PC+2` from RAM into variables 
-        operand_b = self.ram_read(self.pc + 2) # `operand_a` and `operand_b` in case the instruction needs them.
-
-       
         
         while ir != HLT:
-            # Check if ir equals "MUL"
-            if ir == MUL:
-                # Then run the self.alu function using the "MUL", operand_a, operand_b
-                self.alu("MUL", operand_a, operand_b)
+            
 
-            # Check if ir equals "ADD"
-            elif ir == ADD:
-                # Then run the self.alu function using the "ADD", operand_a, operand_b
-                self.alu("ADD", operand_a, operand_b)
+            
+            operand_a = self.find_idx(self.ram_read(self.pc + 1)) # Using `ram_read()`, read the bytes at `PC+1` and `PC+2` from RAM into variables 
+            operand_b = self.find_idx(self.ram_read(self.pc + 2)) # `operand_a` and `operand_b` in case the instruction needs them.
 
-            # Otherwise, check if ir equals "LDI"
-            elif ir == LDI:
-                # If it does, utilize the LDI function and pass it the operand_a and operand_b 
-                self.ldi(operand_a, operand_b)
-
-            # Otherwise, check if ir equals "PRN"
-            elif ir == PRN:
-                # If it does, utilize the PRN function and pass it the operand_a 
-                self.prn(operand_a)
-
-            # Otherwise, check if ir equals "PUSH"
-            elif ir == PUSH:
-                # Then run the self.push function using the operand_a
-                self.push(operand_a)
-
-            # Check if ir equals "POP"
-            elif ir == POP:
-                # Then run the self.pop function using the operand_a
-                self.pop(operand_a)
-            # Check if ir equals "CALL"
-            elif ir == CALL:
-                # Then run the self.call function using the operand_a
-                self.call(operand_a)
-            # Check if ir equals "RET"
-            elif ir == RET:
-                # Then run the self.pop_off_of_stack function
-                self.pop_off_of_stack()
-
-            # Jump to the next value and increment self.pc by 1 
-            self.pc += 1
+            self.dispatch_table[ir](operand_a, operand_b)
+            ir = self.ram[self.pc]
