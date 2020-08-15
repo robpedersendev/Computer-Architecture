@@ -17,11 +17,14 @@ class CPU:
 
     def __init__(self):
         """Construct a new CPU."""
-        self.ram =[0] * 256
-        self.reg= [NONE] * 8
+        # Clear Ram, and set it equal to the Interrupt vector
+        self.ram =[0] * 0xFF
+        # Set the registry to 0xF4
+        self.reg[7] = 0xF4
+        # Set pc pointer to 0
         self.pc = 0
-        # Create the flag pointer
-        self.fl = 0
+        # Create the flag pointer, we need a list of 8 empty paces
+        self.fl = [0]*8
 
     # * `MAR`: Memory Address Register -- which memory address we're reading and writing
     # * `MDR`: Memory Data Register --  writes the held or read value
