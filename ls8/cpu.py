@@ -9,6 +9,8 @@ MUL = 10100010
 PUSH = 1000101 
 POP = 1000110 
 HLT = 1
+CALL = 1010000
+RET = 10001
 
 class CPU:
     """Main CPU class."""
