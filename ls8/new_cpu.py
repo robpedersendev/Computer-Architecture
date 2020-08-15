@@ -220,8 +220,7 @@ class CPU:
 
     # Create a function for the LDI
     def ldi(self, number, value):
-        idx = self.find_idx(number)
-        self.reg[idx] = value
+        self.reg[number] = value
         self.pc += 3
 
     # Create a function for the PRN
