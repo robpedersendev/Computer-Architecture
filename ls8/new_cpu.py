@@ -274,6 +274,12 @@ class CPU:
         elif self.fl[7] == 0:
             self.pc += 2
 
+    def jump_not_similar(self, number, not_used):
+        if self.fl[7] == 0:
+            self.jump(number, not_used)
+        elif self.fl[7] == 1:
+            self.pc += 2
+
     # Structure the run function
     def run(self ):
         """Run the CPU."""
@@ -300,43 +306,5 @@ class CPU:
        
         
         while ir != HLT:
-            # Check if ir equals "MUL"
-            if ir == MUL:
-                # Then run the self.alu function using the "MUL", operand_a, operand_b
-                self.alu("MUL", operand_a, operand_b)
-
-            # Check if ir equals "ADD"
-            elif ir == ADD:
-                # Then run the self.alu function using the "ADD", operand_a, operand_b
-                self.alu("ADD", operand_a, operand_b)
-
-            # Otherwise, check if ir equals "LDI"
-            elif ir == LDI:
-                # If it does, utilize the LDI function and pass it the operand_a and operand_b 
-                self.ldi(operand_a, operand_b)
-
-            # Otherwise, check if ir equals "PRN"
-            elif ir == PRN:
-                # If it does, utilize the PRN function and pass it the operand_a 
-                self.prn(operand_a)
-
-            # Otherwise, check if ir equals "PUSH"
-            elif ir == PUSH:
-                # Then run the self.push function using the operand_a
-                self.push(operand_a)
-
-            # Check if ir equals "POP"
-            elif ir == POP:
-                # Then run the self.pop function using the operand_a
-                self.pop(operand_a)
-            # Check if ir equals "CALL"
-            elif ir == CALL:
-                # Then run the self.call function using the operand_a
-                self.call(operand_a)
-            # Check if ir equals "RET"
-            elif ir == RET:
-                # Then run the self.pop_off_of_stack function
-                self.pop_off_of_stack()
-
-            # Jump to the next value and increment self.pc by 1 
-            self.pc += 1
+            self.dispatch_table[ir](operand_a, operand_b)
+            ir = self.ram_read(self.pc)
